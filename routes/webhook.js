@@ -24,8 +24,12 @@ router.post('/whatsapp', async (req, res) => {
 
   res.status(200).send(''); // Acknowledge immediately
 
-  const { From: from, Body: body, NumMedia, MediaUrl0, MediaContentType0 } = req.body;
-  if (!from) return;
+  const from = req.body.From || req.body.from || req.body.WaId;
+const body = req.body.Body || req.body.body || '';
+const NumMedia = req.body.NumMedia || '0';
+const MediaUrl0 = req.body.MediaUrl0 || null;
+const MediaContentType0 = req.body.MediaContentType0 || null;
+if (!from) return;
 
   const text      = (body || '').trim();
   const tl        = text.toLowerCase();
