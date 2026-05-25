@@ -43,8 +43,8 @@ async function handle(phone, text, mediaInfo) {
   }
 
   // ── Onboarding ────────────────────────────────────────────────
-  if (session.state === 'ONBOARD_NAME') {
-    if (!raw) return [t(session,'What is your name?','¿Cual es su nombre?')];
+  if (session.state === 'WELCOME' || !session.lang) {
+    if (raw === '1') {
     session.name = raw.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
     session.state = 'ONBOARD_COMMUNITY'; ss.save(session);
     return [msgs.askCommunity(session)];
