@@ -35,20 +35,20 @@ async function handle(phone, text, mediaInfo) {
   if (isTrigger(tl,'report','informe'))     return ['__FULL_REPORT__'];
   if (isTrigger(tl,'analyze','analizar'))   return ['__SECTION_REPORT__'];
 
-  // ── Welcome / language selection ──────────────────────────────
-  if (session.state === 'WELCOME' || !session.lang) {
-    if (raw === '1') { session.lang='en'; session.state='ONBOARD_NAME'; ss.save(session); return [msgs.welcomeAfterLang('en')]; }
-    if (raw === '2') { session.lang='es'; session.state='ONBOARD_NAME'; ss.save(session); return [msgs.welcomeAfterLang('es')]; }
-    return [msgs.welcomeLanguage()];
-  }
+// ── Welcome / language selection ──────────────────────────────
+if (session.state === 'WELCOME' || !session.lang) {
+  if (raw === '1') { session.lang='en'; session.state='ONBOARD_NAME'; ss.save(session); return [msgs.welcomeAfterLang('en')]; }
+  if (raw === '2') { session.lang='es'; session.state='ONBOARD_NAME'; ss.save(session); return [msgs.welcomeAfterLang('es')]; }
+  return [msgs.welcomeLanguage()];
+}
 
-  // ── Onboarding ────────────────────────────────────────────────
-  if (session.state === 'WELCOME' || !session.lang) {
-    if (raw === '1') {
-    session.name = raw.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-    session.state = 'ONBOARD_COMMUNITY'; ss.save(session);
-    return [msgs.askCommunity(session)];
-  }
+// ── Onboarding ────────────────────────────────────────────────
+if (session.state === 'ONBOARD_NAME') {  // ← Should check ONBOARD_NAME state, not WELCOME
+  if (!raw) return [t(session,'Please enter your name.','Por favor ingrese su nombre.')];
+  session.name = raw.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+  session.state = 'ONBOARD_COMMUNITY'; ss.save(session);
+  return [msgs.askCommunity(session)];
+}
   if (session.state === 'ONBOARD_COMMUNITY') {
     if (!raw) return [t(session,'Please enter the community name.','Por favor ingrese el nombre de la comunidad.')];
     session.communityName = raw; session.state = 'ONBOARD_ROLE'; ss.save(session);
