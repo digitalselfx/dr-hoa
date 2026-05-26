@@ -5,14 +5,32 @@ const ss = require('./sessionStore');
 function t(session, en, es) { return session?.lang === 'es' ? es : en; }
 function fill(str) { return str.replace(/{company}/g, brand.companyName).replace(/{website}/g, brand.companyWebsite); }
 
+// Get section label safely — works with both label/labelEs and en/es formats
+function secLabel(s, lang) {
+  if (lang === 'es') return s.labelEs || s.es || s.label || s.en || s.id;
+  return s.label || s.en || s.id;
+}
+
+// Get section description safely
+function secDesc(s, lang) {
+  if (lang === 'es') return s.descriptionEs || s.descEs || s.description || '';
+  return s.description || s.descEn || '';
+}
+
+// Get category label safely
+function catLabel(cat, lang) {
+  if (lang === 'es') return cat.labelEs || cat.es || cat.label || cat.en || cat.id;
+  return cat.label || cat.en || cat.id;
+}
+
 function welcomeLanguage() {
   return `🩺 *Dr. HOA*\n_${brand.tagline}_\n\nWelcome! / ¡Bienvenido!\n\nPlease choose your language / Por favor elija su idioma:\n\n*1* — English 🇺🇸\n*2* — Español 🇪🇸`;
 }
 
 function welcomeAfterLang(lang) {
   return lang === 'es'
-    ? `🩺 *Dr. HOA* — Su Especialista en Salud HOA\n\n¡Hola! Realizo diagnosticos operativos gratuitos para HOAs.\n\n✅ Evalue cualquier seccion en cualquier orden\n📎 Suba documentos para analisis IA\n📊 Reciba un informe de diagnostico completo\n🎁 Oferta de consulta gratuita con ${brand.companyName}\n\n¿Cual es su nombre?`
-    : `🩺 *Dr. HOA* — Your HOA Health Specialist\n\nHello! I run free operational diagnostics for HOAs.\n\n✅ Assess any section in any order\n📎 Upload documents for AI analysis\n📊 Receive a full diagnosis report\n🎁 Free consultation offer from ${brand.companyName}\n\nWhat's your name?`;
+    ? `🩺 *Dr. HOA* — Su Especialista en Salud HOA\n\n¡Hola! Realizo diagnosticos operativos y comunicacionales para HOAs.\n\n✅ Evalue cualquier seccion en cualquier orden\n📎 Suba documentos para analisis IA\n📊 Reciba un informe de diagnostico completo\n🎁 Oferta de consulta gratuita con ${brand.companyName}\n\n¿Cual es su nombre?`
+    : `🩺 *Dr. HOA* — Your HOA Health Specialist\n\nHello! I run operational and communications diagnostics for HOAs.\n\n✅ Assess any section in any order\n📎 Upload documents for AI analysis\n📊 Receive a full diagnosis report\n🎁 Free consultation offer from ${brand.companyName}\n\nWhat's your name?`;
 }
 
 function askCommunity(session) {
@@ -30,19 +48,21 @@ function askRole(session) {
 }
 
 function mainMenu(session) {
-  const overall   = ss.overallScore(session, ASSESSMENT);
-  const answered  = ss.answeredCount(session);
-  const tier      = ss.tierLabel(overall, session.lang);
-  const sLines    = ASSESSMENT.map(s => {
-    const sc = ss.sectionScore(session, s.id, ASSESSMENT);
-    const lb = session.lang === 'es' ? s.labelEs : s.label;
-    return `${s.emoji} *${s.id}.* ${lb}${sc !== null ? ` — ${sc}/3` : ''}`;
+  const overall  = ss.overallScore(session, ASSESSMENT);
+  const answered = ss.answeredCount(session);
+  const tier     = ss.tierLabel(overall, session.lang);
+
+  const sLines = ASSESSMENT.map(s => {
+    const sc    = ss.sectionScore(session, s.id, ASSESSMENT);
+    const label = secLabel(s, session.lang);  // ← FIXED: was using lb (undefined)
+    return `${s.emoji} *${s.id}.* ${label}${sc !== null ? ` — ${sc}/3` : ''}`;
   }).join('\n');
+
   const header = t(session,
     `🩺 *Dr. HOA — Health Dashboard*\n${session.communityName ? `🏘️ ${session.communityName}\n` : ''}`,
     `🩺 *Dr. HOA — Panel de Salud*\n${session.communityName ? `🏘️ ${session.communityName}\n` : ''}`
   );
-  const score = overall !== null ? `${t(session,'Overall','General')}: *${overall}/3* — ${tier}\n` : '';
+  const score = overall !== null ? `${t(session, 'Overall', 'General')}: *${overall}/3* — ${tier}\n` : '';
   const prog  = t(session, `📋 ${answered}/125 answered\n`, `📋 ${answered}/125 respondidos\n`);
   const nav   = t(session,
     `\nReply *A–E* for a section\n*scores* · *report* · *upload* · *consult* · *help*`,
@@ -53,31 +73,55 @@ function mainMenu(session) {
 
 function sectionMenu(session, sectionId) {
   const section = SECTION_MAP[sectionId];
-  const score   = ss.sectionScore(session, sectionId, ASSESSMENT);
-  const tier    = ss.tierLabel(score, session.lang);
-  const label   = session.lang === 'es' ? section.labelEs : section.label;
-  const desc    = session.lang === 'es' ? section.descriptionEs : section.description;
+  if (!section) return t(session, 'Section not found.', 'Sección no encontrada.');
+
+  const score = ss.sectionScore(session, sectionId, ASSESSMENT);
+  const tier  = ss.tierLabel(score, session.lang);
+  const label = secLabel(section, session.lang);    // ← FIXED: safe helper
+  const desc  = secDesc(section, session.lang);     // ← FIXED: safe helper
+
   const catLines = section.categories.map((cat, i) => {
-    const cs = ss.catScore(session, cat.id);
-    const cl = session.lang === 'es' ? cat.labelEs : cat.label;
-    const answered = [0,1,2,3,4].filter(ii => session.answers[cat.id]?.[ii]?.rating !== undefined).length;
+    const cs      = ss.catScore(session, cat.id);
+    const cl      = catLabel(cat, session.lang);    // ← FIXED: safe helper
+    const answered = [0,1,2,3,4].filter(
+      ii => session.answers[cat.id]?.[ii]?.rating !== undefined
+    ).length;
     return `  ${i + 1}. ${cl} — ${cs !== null ? cs + '/3' : answered + '/5'}`;
   }).join('\n');
+
   const docs = (session.documents[sectionId] || []).length;
-  return `${section.emoji} *${label}*\n_${desc}_\n\n${score !== null ? `${t(session,'Score','Puntaje')}: *${score}/3* — ${tier}\n\n` : ''}${catLines}\n\n📎 ${docs} ${t(session,'doc(s)','doc(s)')}\n\n${t(session,'Reply *1–5* for a category · *upload* · *analyze* · *back*','Responda *1–5* para una categoria · *subir* · *analizar* · *atras*')}`;
+  return (
+    `${section.emoji} *${label}*\n` +
+    `${desc ? `_${desc}_\n\n` : ''}` +
+    `${score !== null ? `${t(session, 'Score', 'Puntaje')}: *${score}/3* — ${tier}\n\n` : ''}` +
+    `${catLines}\n\n` +
+    `📎 ${docs} ${t(session, 'doc(s)', 'doc(s)')}\n\n` +
+    t(session,
+      'Reply *1–5* for a category · *upload* · *analyze* · *back*',
+      'Responda *1–5* para una categoria · *subir* · *analizar* · *atras*'
+    )
+  );
 }
 
 function categoryIntro(cat, session) {
-  const label = session.lang === 'es' ? cat.labelEs : cat.label;
+  const label = catLabel(cat, session.lang);        // ← FIXED: safe helper
+
   const items = cat.items.map((item, i) => {
-    const text   = session.lang === 'es' ? item.es : item.en;
+    const text   = session.lang === 'es' ? (item.es || item.en) : (item.en || item.es);
     const ans    = session.answers[cat.id]?.[i];
     const status = ans?.rating !== undefined ? `✅ ${ans.rating}/3` : '○';
-    const flag   = item.critical ? ' ⚡' : '';
+    const flag   = item.critical || item.c ? ' ⚡' : '';
     return `${i + 1}. [${status}] ${text}${flag}`;
   }).join('\n');
-  const legend = t(session, '_⚡ high-risk item · 0=Missing 1=Weak 2=Adequate 3=Strong_', '_⚡ elemento de alto riesgo · 0=Ausente 1=Debil 2=Adecuado 3=Solido_');
-  const hint   = t(session, '\nDescribe how you handle this, rate items 0–3, or *upload* a document. Type *done* when finished.', '\nDescriba como maneja esto, califique 0-3, o *suba* un documento. Escriba *listo* cuando termine.');
+
+  const legend = t(session,
+    '_⚡ high-risk item · 0=Missing 1=Weak 2=Adequate 3=Strong_',
+    '_⚡ elemento de alto riesgo · 0=Ausente 1=Debil 2=Adecuado 3=Solido_'
+  );
+  const hint = t(session,
+    '\nDescribe how you handle this, rate items 0–3, or *upload* a document. Type *done* when finished.',
+    '\nDescriba como maneja esto, califique 0-3, o *suba* un documento. Escriba *listo* cuando termine.'
+  );
   return `📋 *${label}*\n\n${items}\n\n${legend}${hint}`;
 }
 
@@ -85,9 +129,11 @@ function ratingsApplied(ratings, session) {
   if (!ratings.length) return null;
   const header = t(session, '*📝 Recorded:*', '*📝 Registrado:*');
   const lines  = ratings.map(r => {
-    const cat  = CATEGORY_MAP[r.catId];
-    const item = cat?.items[r.itemIdx];
-    const text = item ? (session.lang === 'es' ? item.es : item.en) : '';
+    const cat   = CATEGORY_MAP[r.catId];
+    const item  = cat?.items[r.itemIdx];
+    const text  = item
+      ? (session.lang === 'es' ? (item.es || item.en) : (item.en || item.es))
+      : '';
     const short = text.length > 50 ? text.slice(0, 50) + '…' : text;
     return `✅ "${short}" → *${r.rating}/3*${r.note ? `\n   _${r.note}_` : ''}`;
   }).join('\n');
@@ -102,8 +148,23 @@ function criticalAlert(session) {
 }
 
 function consultationOffer(session) {
-  const offer = brand.consultation[session?.lang || 'en'];
-  return `━━━━━━━━━━━━━━━━━\n🎁 *${offer.title}*\n\n${offer.body}\n\n👉 ${brand.calendlyLink}\n📞 ${brand.companyPhone}\n📧 ${brand.companyEmail}\n━━━━━━━━━━━━━━━━━`;
+  const lang  = session?.lang || 'en';
+  const offer = brand.consultation?.[lang] || brand.consultation?.en;
+  if (!offer) {
+    return t(session,
+      `🎁 *Free 30-min HOA Consultation*\n\nContact us:\n📞 ${brand.companyPhone}\n📧 ${brand.companyEmail}\n🌐 ${brand.companyWebsite}`,
+      `🎁 *Consulta HOA Gratuita de 30 min*\n\nContactenos:\n📞 ${brand.companyPhone}\n📧 ${brand.companyEmail}\n🌐 ${brand.companyWebsite}`
+    );
+  }
+  return (
+    `━━━━━━━━━━━━━━━━━\n` +
+    `🎁 *${offer.title}*\n\n` +
+    `${offer.body}\n\n` +
+    `👉 ${brand.calendlyLink}\n` +
+    `📞 ${brand.companyPhone}\n` +
+    `📧 ${brand.companyEmail}\n` +
+    `━━━━━━━━━━━━━━━━━`
+  );
 }
 
 function askEmail(session) {
@@ -121,7 +182,8 @@ function emailConfirmed(session) {
 }
 
 function uploadPrompt(session) {
-  const sLabel = session.activeSectionId ? SECTION_MAP[session.activeSectionId]?.[session.lang === 'es' ? 'labelEs' : 'label'] : '';
+  const sec    = session.activeSectionId ? SECTION_MAP[session.activeSectionId] : null;
+  const sLabel = sec ? secLabel(sec, session.lang) : '';
   return t(session,
     `📎 *Upload a Document*${sLabel ? ` for ${sLabel}` : ''}\n\nSend any relevant file:\n• Meeting minutes / agendas\n• Contracts or vendor agreements\n• Financial statements\n• Insurance certificates\n• Policies or procedures\n\n_PDF, JPG, PNG supported_\n\nI'll analyze it and auto-score relevant items.`,
     `📎 *Subir Documento*${sLabel ? ` para ${sLabel}` : ''}\n\nEnvie cualquier archivo relevante:\n• Actas de reuniones / agendas\n• Contratos de proveedores\n• Estados financieros\n• Certificados de seguro\n• Politicas o procedimientos\n\n_Compatible: PDF, JPG, PNG_\n\nLo analizare y puntuare elementos relevantes automaticamente.`
