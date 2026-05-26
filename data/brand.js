@@ -13,11 +13,11 @@ module.exports = {
   botEmoji: '🩺',
 
   // ── Your company ← EDIT ALL OF THESE ───────────────
-  companyName:    'Your Management Company',       // ← EDIT
-  companyPhone:   '+1 (555) 000-0000',             // ← EDIT
-  companyEmail:   'hello@yourcompany.com',          // ← EDIT
+  companyName:    'Digitalselfx',       // ← EDIT
+  companyPhone:   '+1 (754) 2617624',             // ← EDIT
+  companyEmail:   'digitalselfxus@gmail.com',          // ← EDIT
   companyWebsite: 'https://yourcompany.com',        // ← EDIT
-  calendlyLink:   'https://calendly.com/yourco',   // ← EDIT (or any booking URL)
+  calendlyLink:   'https://calendly.com/digitalselfx',   // ← EDIT (or any booking URL)
 
   // ── Freemium gate ──────────────────────────────────
   freeItemLimit: 5,   // number of items users can rate before paywall
@@ -25,14 +25,14 @@ module.exports = {
   // ── Consultation offer copy (shown after report) ───
   consultation: {
     en: {
-      title: 'Free 30-min HOA Consultation',
+      title: 'Free 5 items HOA Consultation',
       body:  'Our team reviews your Dr. HOA results and gives you a clear action plan — at no cost.',
-      cta:   'Book free consultation',
+      cta:   'Book complete consultation',
     },
     es: {
-      title: 'Consulta HOA Gratuita de 30 min',
+      title: 'Consulta HOA Gratuita de 5 areas',
       body:  'Nuestro equipo revisa sus resultados y le da un plan de accion claro — sin costo.',
-      cta:   'Agendar consulta gratuita',
+      cta:   'Agendar consulta completa.'
     },
   },
 
@@ -42,13 +42,13 @@ module.exports = {
       'All 5 sections · 125 items',
       'AI diagnosis report by email',
       'Priority recommendations',
-      'Free 30-min consultation',
+      'Free 5 items consultation',
     ],
     es: [
       '5 secciones · 125 elementos',
       'Informe de diagnostico IA por correo',
       'Recomendaciones prioritarias',
-      'Consulta gratuita de 30 minutos',
+      'Consulta gratuita de 5 areas',
     ],
   },
 };
