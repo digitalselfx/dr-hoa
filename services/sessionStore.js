@@ -1,8 +1,3 @@
-/**
- * Per-user session store (in-memory).
- * For production with persistent storage, swap the Map for Redis.
- */
-
 const SESSION_TTL = 8 * 60 * 60 * 1000; // 8 hours
 const store = new Map();
 
@@ -19,32 +14,36 @@ function getOrCreate(phone) {
   if (!s) {
     s = {
       phone,
-      lang: null,            // 'en' | 'es'
-      name: null,
-      communityName: null,
-      email: null,           // captured lead email
-      role: null,
-      state: 'WELCOME',
-      answers: {},           // { catId: { itemIdx: { rating, note, source } } }
-      documents: {},         // { sectionId: [{ fileName, mimeType, analysis }] }
-      activeSectionId: null,
-      activeCatId: null,
-      chatHistory: [],
-      consultOffered: false,
-      criticalIssues: [],
-      startedAt: new Date(),
-      lastActive: new Date(),
+      lang:             null,
+      name:             null,
+      communityName:    null,
+      email:            null,
+      role:             null,
+      state:            'WELCOME',
+      // Conversational assessment
+      activeSectionId:  null,
+      activeCatIdx:     0,
+      answers:          {},   // { catId: { itemIdx: { rating, note, source } } }
+      documents:        {},   // { sectionId: [...] }
+      // Freemium
+      freeSectionUsed:  null,  // which section ID was used for free
+      unlockedFull:     false, // true after email submitted
+      // Chat history for Claude context
+      chatHistory:      [],
+      startedAt:        new Date(),
+      lastActive:       new Date(),
     };
     store.set(phone, s);
   }
   return s;
 }
 
-function save(s) { s.lastActive = new Date(); store.set(s.phone, s); }
-function remove(phone) { store.delete(phone); }
-function getAll() { return [...store.values()]; }
+function save(s)   { s.lastActive = new Date(); store.set(s.phone, s); }
+function remove(p) { store.delete(p); }
+function getAll()  { return [...store.values()]; }
 
 // ── Scoring ────────────────────────────────────────────────────────
+
 function catScore(session, catId) {
   const cat = session.answers[catId];
   if (!cat) return null;
@@ -80,10 +79,10 @@ function docCount(session) {
 }
 
 function tierLabel(score, lang) {
-  if (score === null) return lang === 'es' ? 'Sin puntaje' : 'Not scored';
+  if (score === null) return lang === 'es' ? 'Sin evaluación' : 'Not assessed';
   const n = parseFloat(score);
   const labels = lang === 'es'
-    ? ['Excelente ✅', 'Bueno ✅', 'Necesita Tratamiento ⚠️', 'Critico 🔴', 'Emergencia 🚨']
+    ? ['Excelente ✅', 'Bueno ✅', 'Necesita Tratamiento ⚠️', 'Crítico 🔴', 'Emergencia 🚨']
     : ['Excellent ✅', 'Good ✅', 'Needs Treatment ⚠️', 'Critical 🔴', 'Emergency 🚨'];
   if (n >= 2.8) return labels[0];
   if (n >= 2.5) return labels[1];
@@ -93,8 +92,11 @@ function tierLabel(score, lang) {
 }
 
 function addChat(session, role, content) {
-  session.chatHistory.push({ role, content: typeof content === 'string' ? content : JSON.stringify(content) });
-  if (session.chatHistory.length > 16) session.chatHistory.splice(0, 2);
+  session.chatHistory.push({
+    role,
+    content: typeof content === 'string' ? content : JSON.stringify(content)
+  });
+  if (session.chatHistory.length > 14) session.chatHistory.splice(0, 2);
 }
 
 module.exports = {
