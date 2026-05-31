@@ -25,7 +25,7 @@ function welcomeAfterLang(lang) {
   return lang === 'es'
     ? (
       `🩺 *Dr. HOA* — Su Especialista en Salud HOA\n\n` +
-      `¡Hola! Soy Dr. HOA. Realizo diagnósticos operativos para HOAs de forma conversacional — sin formularios, sin puntuaciones complicadas.\n\n` +
+      `¡Hola! Soy Dr. HOA. Realizo diagnósticos operativos para HOAs de forma conversacional — sin formularios ni puntuaciones complicadas.\n\n` +
       `Solo responda mis preguntas con sus propias palabras y yo me encargo del análisis.\n\n` +
       `Tiene *1 sección completamente gratis* para conocer cómo funciona.\n\n` +
       `¿Cuál es su nombre?`
@@ -34,22 +34,22 @@ function welcomeAfterLang(lang) {
       `🩺 *Dr. HOA* — Your HOA Health Specialist\n\n` +
       `Hello! I'm Dr. HOA. I run operational diagnostics for HOAs through conversation — no forms, no complicated scores.\n\n` +
       `Just answer my questions in your own words and I'll take care of the analysis.\n\n` +
-      `You get *1 full section completely free* to see how it works.\n\n` +
+      `You get *1 section completely free* to see how it works.\n\n` +
       `What's your name?`
     );
 }
 
 function askCommunity(session) {
   return t(session,
-    `Nice to meet you, *${session.name}*! 👋\n\nWhat is the name of the HOA or community you're assessing?`,
+    `Nice to meet you, *${session.name}*! 👋\n\nWhat is the name of the HOA or community you are assessing?`,
     `¡Mucho gusto, *${session.name}*! 👋\n\n¿Cuál es el nombre de la HOA o comunidad que está evaluando?`
   );
 }
 
 function askRole(session) {
   return t(session,
-    `Got it — *${session.communityName}*. And what is your role?\n\n*1* — Board Member\n*2* — Property Manager\n*3* — Homeowner\n*4* — Other`,
-    `Entendido — *${session.communityName}*. ¿Y cuál es su rol?\n\n*1* — Miembro de Junta\n*2* — Administrador\n*3* — Propietario\n*4* — Otro`
+    `Got it — *${session.communityName}*. What is your role?\n\n*1* — Board Member\n*2* — Property Manager\n*3* — Homeowner\n*4* — Other`,
+    `Entendido — *${session.communityName}*. ¿Cuál es su rol?\n\n*1* — Miembro de Junta\n*2* — Administrador\n*3* — Propietario\n*4* — Otro`
   );
 }
 
@@ -60,181 +60,200 @@ function mainMenu(session) {
   const answered = ss.answeredCount(session);
 
   const sLines = ASSESSMENT.map(s => {
-    const score = ss.sectionScore(session, s.id, ASSESSMENT);
-    const label = secLabel(s, session.lang);
-    const done  = score !== null;
-    const locked = !session.unlockedFull && session.freeSectionUsed && session.freeSectionUsed !== s.id;
-    return `${s.emoji} *${s.id}.* ${label}${done ? ` ✅` : locked ? ' 🔒' : ''}`;
+    const score  = ss.sectionScore(session, s.id, ASSESSMENT);
+    const label  = secLabel(s, session.lang);
+    const done   = score !== null;
+    const locked = !session.unlockedFull
+      && session.freeSectionUsed
+      && session.freeSectionUsed !== s.id;
+    return `${s.emoji} *${s.id}.* ${label}${done ? ' ✅' : locked ? ' 🔒' : ''}`;
   }).join('\n');
 
-  const header = t(session,
-    `🩺 *Dr. HOA*${session.communityName ? ` — ${session.communityName}` : ''}\n`,
-    `🩺 *Dr. HOA*${session.communityName ? ` — ${session.communityName}` : ''}\n`
-  );
+  const header = `🩺 *Dr. HOA*${session.communityName ? ` — ${session.communityName}` : ''}\n`;
 
   const scoreBlock = overall !== null
-    ? t(session,
-        `Overall health: *${overall}/3*\n`,
-        `Salud general: *${overall}/3*\n`
-      )
+    ? t(session, `Health score: *${overall}/3*\n`, `Puntaje de salud: *${overall}/3*\n`)
     : '';
 
   const nav = t(session,
-    `\nReply *A*, *B*, *C*, *D*, or *E* to begin a section.\n\n_1 section free · Unlock all 5 with your email_`,
-    `\nResponda *A*, *B*, *C*, *D* o *E* para comenzar una sección.\n\n_1 sección gratis · Desbloquee las 5 con su correo_`
+    `\nReply *A*, *B*, *C*, *D* or *E* to begin a section.\n_1 section free · Full evaluation ${brand.packagePrice}_`,
+    `\nResponda *A*, *B*, *C*, *D* o *E* para comenzar una sección.\n_1 sección gratis · Evaluación completa ${brand.packagePrice}_`
   );
 
   return header + scoreBlock + '\n' + sLines + nav;
 }
 
-// ── Locked section message ────────────────────────────────────────
+// ── Locked — payment required ─────────────────────────────────────
 
 function lockedMessage(session) {
   return t(session,
-    `🔒 *This section is locked.*\n\nYou've used your 1 free section. To access all 5 sections and receive your complete Dr. HOA diagnosis package with a *50% discount*, just send your email address below.`,
-    `🔒 *Esta sección está bloqueada.*\n\nYa usó su sección gratuita. Para acceder a las 5 secciones y recibir su paquete completo de diagnóstico Dr. HOA con *50% de descuento*, simplemente envíe su correo electrónico.`
+    (
+      `🔒 *This section requires the full evaluation package.*\n\n` +
+      `You have completed your free section. To continue with all 5 sections, purchase the *${brand.packageName}*.\n\n` +
+      `A payment link and full package proposal will be sent to your email.\n\n` +
+      `📧 Please send your email address to receive the payment link.`
+    ),
+    (
+      `🔒 *Esta sección requiere el paquete de evaluación completa.*\n\n` +
+      `Ha completado su sección gratuita. Para continuar con las 5 secciones, adquiera el *${brand.packageName}*.\n\n` +
+      `Un enlace de pago y la propuesta completa del paquete serán enviados a su correo.\n\n` +
+      `📧 Por favor envíe su correo electrónico para recibir el enlace de pago.`
+    )
   );
 }
 
-// ── Free section complete — email invite ─────────────────────────
+// ── After free section — payment invite ───────────────────────────
 
 function freeSessionComplete(session) {
+  const perks = brand.packageIncludes[session.lang || 'en'];
+  const perkLines = perks.map(p => `• ${p}`).join('\n');
+
   return t(session,
     (
       `━━━━━━━━━━━━━━━━━\n` +
-      `🎁 *Want the full picture?*\n\n` +
-      `You've just seen what Dr. HOA can do for *one* area of your HOA.\n\n` +
-      `Get the *Complete HOA Health Package*:\n` +
-      `• All 5 sections diagnosed\n` +
-      `• Full findings report by email\n` +
-      `• Prioritized action plan\n` +
-      `• Free 30-min consultation with ${brand.companyName}\n\n` +
-      `*Special offer: 50% discount* for completing this assessment.\n\n` +
-      `📧 Send your email to unlock everything — or type *skip* to continue.\n` +
+      `🩺 *Want the complete diagnosis?*\n\n` +
+      `You have just seen a sample of what Dr. HOA can do. The *${brand.packageName}* covers all 5 areas:\n\n` +
+      `${perkLines}\n\n` +
+      `*Price: ${brand.packagePrice}*\n\n` +
+      `📧 Send your email and we will send you the payment link and full package proposal.\n` +
       `━━━━━━━━━━━━━━━━━`
     ),
     (
       `━━━━━━━━━━━━━━━━━\n` +
-      `🎁 *¿Quiere el panorama completo?*\n\n` +
-      `Acaba de ver lo que Dr. HOA puede hacer por *una* área de su HOA.\n\n` +
-      `Obtenga el *Paquete Completo de Salud HOA*:\n` +
-      `• Las 5 secciones diagnosticadas\n` +
-      `• Informe completo de hallazgos por correo\n` +
-      `• Plan de acción priorizado\n` +
-      `• Consulta gratuita de 30 min con ${brand.companyName}\n\n` +
-      `*Oferta especial: 50% de descuento* por completar esta evaluación.\n\n` +
-      `📧 Envíe su correo para desbloquear todo — o escriba *saltar* para continuar.\n` +
+      `🩺 *¿Quiere el diagnóstico completo?*\n\n` +
+      `Acaba de ver una muestra de lo que Dr. HOA puede hacer. El *${brand.packageName}* cubre las 5 áreas:\n\n` +
+      `${perkLines}\n\n` +
+      `*Precio: ${brand.packagePrice}*\n\n` +
+      `📧 Envíe su correo y le enviaremos el enlace de pago y la propuesta completa del paquete.\n` +
       `━━━━━━━━━━━━━━━━━`
     )
   );
 }
 
-// ── Discount offer (after email confirmed) ────────────────────────
+// ── Email captured — send payment link ───────────────────────────
 
-function discountOffer(session) {
+function emailCaptured(session) {
   return t(session,
     (
-      `✅ *Full access unlocked!*\n\n` +
-      `Your complete Dr. HOA package is on its way to *${session.email}*.\n\n` +
-      `Our team at *${brand.companyName}* will also reach out within 1 business day to schedule your free consultation.\n\n` +
-      `You can now assess all 5 sections. Reply *A–E* to continue.`
+      `✅ Got it! We will send the payment link and package proposal to *${session.email}* shortly.\n\n` +
+      `Once payment is confirmed, you will have full access to all 5 sections.\n\n` +
+      `Questions? Email us at ${brand.companyEmail}`
     ),
     (
-      `✅ *¡Acceso completo desbloqueado!*\n\n` +
-      `Su paquete completo Dr. HOA está en camino a *${session.email}*.\n\n` +
-      `Nuestro equipo de *${brand.companyName}* también se comunicará dentro de 1 día hábil para programar su consulta gratuita.\n\n` +
-      `Ahora puede evaluar las 5 secciones. Responda *A–E* para continuar.`
+      `✅ ¡Listo! Enviaremos el enlace de pago y la propuesta del paquete a *${session.email}* en breve.\n\n` +
+      `Una vez confirmado el pago, tendrá acceso completo a las 5 secciones.\n\n` +
+      `¿Preguntas? Escríbanos a ${brand.companyEmail}`
     )
   );
 }
 
-// ── Continue assessment after section ────────────────────────────
+// ── Payment link message (sent after email captured) ─────────────
+
+function paymentLinkMessage(session) {
+  const perks = brand.packageIncludes[session.lang || 'en'];
+  const perkLines = perks.map(p => `• ${p}`).join('\n');
+
+  return t(session,
+    (
+      `🩺 *${brand.packageName}*\n\n` +
+      `${perkLines}\n\n` +
+      `*Price: ${brand.packagePrice} USD*\n\n` +
+      `👉 *Pay here:* ${brand.stripeLink}\n\n` +
+      `After payment is confirmed your full evaluation will begin immediately.\n\n` +
+      `_${brand.companyEmail} · ${brand.companyWebsite}_`
+    ),
+    (
+      `🩺 *${brand.packageName}*\n\n` +
+      `${perkLines}\n\n` +
+      `*Precio: ${brand.packagePrice} USD*\n\n` +
+      `👉 *Pagar aquí:* ${brand.stripeLink}\n\n` +
+      `Tras confirmar el pago su evaluación completa comenzará de inmediato.\n\n` +
+      `_${brand.companyEmail} · ${brand.companyWebsite}_`
+    )
+  );
+}
+
+// ── Payment confirmed — unlock full access ────────────────────────
+
+function paymentConfirmed(session) {
+  return t(session,
+    (
+      `✅ *Payment confirmed! Full access unlocked.*\n\n` +
+      `Welcome to your complete Dr. HOA evaluation, *${session.name}*.\n\n` +
+      `Reply *A*, *B*, *C*, *D* or *E* to continue with any section.`
+    ),
+    (
+      `✅ *¡Pago confirmado! Acceso completo desbloqueado.*\n\n` +
+      `Bienvenido/a a su evaluación completa Dr. HOA, *${session.name}*.\n\n` +
+      `Responda *A*, *B*, *C*, *D* o *E* para continuar con cualquier sección.`
+    )
+  );
+}
+
+// ── Continue after section ────────────────────────────────────────
 
 function continueAssessment(session) {
-  const remaining = ASSESSMENT.filter(s => {
-    const score = ss.sectionScore(session, s.id, ASSESSMENT);
-    return score === null;
-  });
+  const remaining = ASSESSMENT.filter(s =>
+    ss.sectionScore(session, s.id, ASSESSMENT) === null
+  );
 
   if (!remaining.length) {
     return t(session,
-      `🎉 *All sections complete!* Reply *report* to receive your full Dr. HOA diagnosis report.`,
-      `🎉 *¡Todas las secciones completas!* Responda *informe* para recibir su informe completo de diagnóstico Dr. HOA.`
+      `🎉 *All 5 sections complete!*\n\nReply *report* to receive your full Dr. HOA diagnosis report.`,
+      `🎉 *¡Las 5 secciones completas!*\n\nResponda *informe* para recibir su informe completo de diagnóstico Dr. HOA.`
     );
   }
 
-  const nextSection = remaining[0];
-  const label = secLabel(nextSection, session.lang);
+  const next  = remaining[0];
+  const label = secLabel(next, session.lang);
 
   return t(session,
-    `Great work! ${remaining.length} section${remaining.length > 1 ? 's' : ''} remaining.\n\nReply *${nextSection.id}* to continue with *${label}*, or choose any section from the menu (*A–E*).`,
-    `¡Excelente! Quedan ${remaining.length} sección${remaining.length > 1 ? 'es' : ''}.\n\nResponda *${nextSection.id}* para continuar con *${label}*, o elija cualquier sección del menú (*A–E*).`
+    `${remaining.length} section${remaining.length > 1 ? 's' : ''} remaining.\n\nReply *${next.id}* to continue with *${label}*, or choose any section (*A–E*).`,
+    `Quedan ${remaining.length} sección${remaining.length > 1 ? 'es' : ''}.\n\nResponda *${next.id}* para continuar con *${label}*, o elija cualquier sección (*A–E*).`
   );
 }
 
-// ── Email confirmed ───────────────────────────────────────────────
+// ── Email confirmed (onboarding) ──────────────────────────────────
 
 function emailConfirmed(session) {
   return t(session,
-    `✅ Perfect! We have your email: *${session.email}*`,
-    `✅ ¡Perfecto! Tenemos su correo: *${session.email}*`
+    `✅ Email received: *${session.email}*`,
+    `✅ Correo recibido: *${session.email}*`
   );
 }
 
-// ── Consultation offer ────────────────────────────────────────────
-
-function consultationOffer(session) {
-  const lang  = session?.lang || 'en';
-  const offer = brand.consultation?.[lang] || brand.consultation?.en;
-  if (!offer) {
-    return t(session,
-      `🎁 *Free 30-min HOA Consultation*\nContact us:\n📞 ${brand.companyPhone}\n📧 ${brand.companyEmail}`,
-      `🎁 *Consulta HOA Gratuita de 30 min*\nContáctenos:\n📞 ${brand.companyPhone}\n📧 ${brand.companyEmail}`
-    );
-  }
-  return (
-    `━━━━━━━━━━━━━━━━━\n` +
-    `🎁 *${offer.title}*\n\n` +
-    `${offer.body}\n\n` +
-    `👉 ${brand.calendlyLink}\n` +
-    `📞 ${brand.companyPhone}\n` +
-    `📧 ${brand.companyEmail}\n` +
-    `━━━━━━━━━━━━━━━━━`
-  );
-}
-
-// ── Help message ──────────────────────────────────────────────────
+// ── Help ──────────────────────────────────────────────────────────
 
 function helpMessage(session) {
   return t(session,
     (
       `❓ *Dr. HOA — How it works*\n\n` +
-      `• Reply *A, B, C, D, or E* to start a section\n` +
+      `• Reply *A, B, C, D* or *E* to start a section\n` +
       `• Answer each question in your own words\n` +
-      `• I'll analyze your answers and give you findings\n` +
-      `• *1 section is completely free*\n\n` +
+      `• I analyze your answers and give you findings\n` +
+      `• *1 section is completely free*\n` +
+      `• Full evaluation (all 5 sections): *${brand.packagePrice}*\n\n` +
       `*Commands:*\n` +
       `• *menu* — main menu\n` +
       `• *report* — full diagnosis report\n` +
-      `• *consult* — free consultation\n` +
       `• *reset* — start over`
     ),
     (
       `❓ *Dr. HOA — Cómo funciona*\n\n` +
-      `• Responda *A, B, C, D o E* para iniciar una sección\n` +
+      `• Responda *A, B, C, D* o *E* para iniciar una sección\n` +
       `• Responda cada pregunta con sus propias palabras\n` +
-      `• Analizaré sus respuestas y le daré hallazgos\n` +
-      `• *1 sección es completamente gratis*\n\n` +
+      `• Analizo sus respuestas y le doy hallazgos\n` +
+      `• *1 sección es completamente gratis*\n` +
+      `• Evaluación completa (5 secciones): *${brand.packagePrice}*\n\n` +
       `*Comandos:*\n` +
       `• *menú* — menú principal\n` +
       `• *informe* — informe completo\n` +
-      `• *consulta* — consulta gratuita\n` +
       `• *reiniciar* — comenzar de nuevo`
     )
   );
 }
 
-// ── Ratings applied (for document uploads) ────────────────────────
+// ── Ratings applied (document uploads) ───────────────────────────
 
 function ratingsApplied(ratings, session) {
   if (!ratings || !ratings.length) return null;
@@ -255,14 +274,15 @@ function ratingsApplied(ratings, session) {
 
 function uploadPrompt(session) {
   return t(session,
-    `📎 *Send a document*\n\nYou can upload meeting minutes, contracts, financial statements, insurance certificates, or any relevant HOA document.\n\n_Supports: PDF, JPG, PNG_\n\nI'll analyze it and factor it into the assessment.`,
+    `📎 *Send a document*\n\nYou can upload meeting minutes, contracts, financial statements, insurance certificates, or any relevant HOA document.\n\n_Supports: PDF, JPG, PNG_\n\nI will analyze it and factor it into the assessment.`,
     `📎 *Envíe un documento*\n\nPuede subir actas de reuniones, contratos, estados financieros, certificados de seguro o cualquier documento relevante de la HOA.\n\n_Compatible: PDF, JPG, PNG_\n\nLo analizaré y lo incluiré en la evaluación.`
   );
 }
 
 module.exports = {
   welcomeLanguage, welcomeAfterLang, askCommunity, askRole,
-  mainMenu, lockedMessage, freeSessionComplete, discountOffer,
-  continueAssessment, emailConfirmed, consultationOffer,
+  mainMenu, lockedMessage, freeSessionComplete,
+  emailCaptured, paymentLinkMessage, paymentConfirmed,
+  continueAssessment, emailConfirmed,
   helpMessage, ratingsApplied, uploadPrompt,
 };
