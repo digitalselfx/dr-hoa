@@ -1,54 +1,41 @@
 /**
  * Dr. HOA — Brand Configuration
- * ─────────────────────────────────────────────────
- * THIS IS THE ONLY FILE YOU NEED TO EDIT.
- * Replace every value marked ← EDIT with your real information.
+ * ─────────────────────────────
+ * Edit this file to update company info, payment link, and pricing.
  */
 
 module.exports = {
 
-  // ── Bot identity (leave these as-is) ───────────────
-  botName:  'Dr. HOA',
-  tagline:  'Your HOA Health Specialist',
-  botEmoji: '🩺',
+  // ── Bot identity ───────────────────────────────────────────
+  botName:    'Dr. HOA',
+  tagline:    'Your HOA Health Specialist',
+  botEmoji:   '🩺',
 
-  // ── Your company ← EDIT ALL OF THESE ───────────────
-  companyName:    'Digitalselfx',       // ← EDIT
-  companyPhone:   '+1 (754) 2617624',             // ← EDIT
-  companyEmail:   'digitalselfxus@gmail.com',          // ← EDIT
-  companyWebsite: 'https://yourcompany.com',        // ← EDIT
-  calendlyLink:   'https://calendly.com/digitalselfx',   // ← EDIT (or any booking URL)
+  // ── Company ────────────────────────────────────────────────
+  companyName:    'Dr. HOA',
+  companyEmail:   'hello@drhoa.com',          // ← EDIT
+  companyWebsite: 'https://drhoa.com',         // ← EDIT
 
-  // ── Freemium gate ──────────────────────────────────
-  freeItemLimit: 5,   // number of items users can rate before paywall
+  // ── Payment ────────────────────────────────────────────────
+  // Replace with your real Stripe payment link after creating it at:
+  // dashboard.stripe.com → Payment Links → Create payment link
+  stripeLink:  'https://buy.stripe.com/yourlink',  // ← EDIT
+  packagePrice: '$49',
+  packageName:  'Dr. HOA Complete Evaluation',
 
-  // ── Consultation offer copy (shown after report) ───
-  consultation: {
-    en: {
-      title: 'Free 5 items HOA Consultation',
-      body:  'Our team reviews your Dr. HOA results and gives you a clear action plan — at no cost.',
-      cta:   'Book complete consultation',
-    },
-    es: {
-      title: 'Consulta HOA Gratuita de 5 areas',
-      body:  'Nuestro equipo revisa sus resultados y le da un plan de accion claro — sin costo.',
-      cta:   'Agendar consulta completa.'
-    },
-  },
-
-  // ── Services you offer (shown in paywall perks) ────
-  perks: {
+  // ── What is included in the paid package ──────────────────
+  packageIncludes: {
     en: [
-      'All 5 sections · 125 items',
-      'AI diagnosis report by email',
-      'Priority recommendations',
-      'Free 5 items consultation',
+      'All 5 sections fully assessed (125 items)',
+      'Complete AI diagnosis report by email',
+      'Prioritized action plan for your HOA',
+      'Detailed findings per section',
     ],
     es: [
-      '5 secciones · 125 elementos',
-      'Informe de diagnostico IA por correo',
-      'Recomendaciones prioritarias',
-      'Consulta gratuita de 5 areas',
+      'Las 5 secciones completamente evaluadas (125 elementos)',
+      'Informe completo de diagnóstico IA por correo',
+      'Plan de acción priorizado para su HOA',
+      'Hallazgos detallados por sección',
     ],
   },
 };
