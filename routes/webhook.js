@@ -4,8 +4,9 @@ const twilio   = require('twilio');
 const { handle } = require('../services/assessmentFlow');
 const { send, sendMany } = require('../services/twilio');
 const { generateFullReport, generateSectionReport } = require('../services/claude');
-const ss   = require('../services/sessionStore');
-const msgs = require('../services/messages');
+const ss    = require('../services/sessionStore');
+const msgs  = require('../services/messages');
+const brand = require('../data/brand');
 const { ASSESSMENT } = require('../data/assessment');
 
 // POST /webhook/whatsapp
@@ -22,11 +23,11 @@ router.post('/whatsapp', async (req, res) => {
 
   res.status(200).send('');
 
-  const from     = req.body.From || req.body.from;
-  const body     = req.body.Body || req.body.body || '';
-  const numMedia = parseInt(req.body.NumMedia || '0');
-  const mediaUrl = req.body.MediaUrl0 || null;
-  const mediaMime= req.body.MediaContentType0 || null;
+  const from      = req.body.From || req.body.from;
+  const body      = req.body.Body || req.body.body || '';
+  const numMedia  = parseInt(req.body.NumMedia || '0');
+  const mediaUrl  = req.body.MediaUrl0 || null;
+  const mediaMime = req.body.MediaContentType0 || null;
 
   if (!from) return;
 
@@ -38,7 +39,7 @@ router.post('/whatsapp', async (req, res) => {
   console.log(`📩 [${from}] "${text || '[media]'}"${hasMedia ? ' +file' : ''}`);
 
   try {
-    // ── Async: full report ────────────────────────────────────
+    // ── Full report (async) ───────────────────────────────────
     if (tl === 'report' || tl === 'informe') {
       const session = ss.get(from);
       if (!session || ss.answeredCount(session) === 0) {
@@ -51,7 +52,23 @@ router.post('/whatsapp', async (req, res) => {
         : '⏳ Generating your Complete Dr. HOA Report...');
       const report = await generateFullReport(session);
       await sendMany(from, splitReport(report));
-      await send(from, msgs.consultationOffer(session));
+      return;
+    }
+
+    // ── Admin: manually confirm payment ──────────────────────
+    // Send "confirm:whatsapp:+1XXXXXXXXXX" to unlock a user
+    if (tl.startsWith('confirm:')) {
+      const targetPhone = text.split(':').slice(1).join(':');
+      const targetSession = ss.get(targetPhone);
+      if (targetSession) {
+        targetSession.unlockedFull = true;
+        targetSession.state        = 'MENU';
+        ss.save(targetSession);
+        await send(targetPhone, msgs.paymentConfirmed(targetSession));
+        await send(from, `✅ Unlocked: ${targetPhone}`);
+      } else {
+        await send(from, `❌ Session not found: ${targetPhone}`);
+      }
       return;
     }
 
@@ -76,7 +93,7 @@ router.post('/status', (req, res) => {
   res.sendStatus(200);
 });
 
-// Admin leads
+// Admin: view leads
 router.get('/leads', (req, res) => {
   const sessions = ss.getAll();
   res.json({
@@ -84,16 +101,17 @@ router.get('/leads', (req, res) => {
     leads: sessions
       .filter(s => s.name || s.email)
       .map(s => ({
-        name:           s.name,
-        community:      s.communityName,
-        email:          s.email || null,
-        phone:          s.phone.replace(/\d(?=\d{4})/g, '*'),
-        lang:           s.lang,
-        freeSectionUsed:s.freeSectionUsed,
-        unlocked:       s.unlockedFull,
-        answered:       ss.answeredCount(s),
-        score:          ss.overallScore(s, ASSESSMENT),
-        lastActive:     s.lastActive,
+        name:            s.name,
+        community:       s.communityName,
+        email:           s.email || null,
+        phone:           s.phone.replace(/\d(?=\d{4})/g, '*'),
+        lang:            s.lang,
+        freeSectionUsed: s.freeSectionUsed,
+        unlocked:        s.unlockedFull,
+        state:           s.state,
+        answered:        ss.answeredCount(s),
+        score:           ss.overallScore(s, ASSESSMENT),
+        lastActive:      s.lastActive,
       }))
       .sort((a, b) => new Date(b.lastActive) - new Date(a.lastActive))
   });
