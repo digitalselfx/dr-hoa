@@ -1,3 +1,4 @@
+
 /**
  * Dr. HOA — Conversational Assessment Flow
  *
@@ -166,6 +167,26 @@ async function handle(phone, text, mediaInfo) {
     )];
   }
 
+  // ── Doc uploaded or user skipped — start first question ──────
+  if (session.awaitingDocOrContinue) {
+    session.awaitingDocOrContinue = false;
+    ss.save(session);
+    // If they sent media, handle it first then ask Q1
+    const sec   = SECTION_MAP[session.activeSectionId];
+    const total = sec ? sec.categories.length : 5;
+    const firstQ = getCategoryQuestion(session, session.activeSectionId, 0);
+    const q1msg  = t(session,
+      `*Question 1 of ${total}:*\n\n${firstQ}`,
+      `*Pregunta 1 de ${total}:*\n\n${firstQ}`
+    );
+    if (mediaInfo) {
+      // Process doc first, then ask Q1
+      const docReplies = await handleDoc(session, raw, mediaInfo);
+      return [...docReplies, q1msg];
+    }
+    return [q1msg];
+  }
+
   // ── Section selection ─────────────────────────────────────
   if (/^[a-eA-E]$/.test(raw)) return startSection(session, raw.toUpperCase());
 
@@ -211,11 +232,29 @@ function startSection(session, sectionId) {
   const total = section.categories.length;
 
   const intro = t(session,
-    `${section.emoji} *${label}*\n\nI will ask you ${total} questions about this area. Just answer naturally.\n\n*Question 1 of ${total}:*\n\n`,
-    `${section.emoji} *${label}*\n\nLe haré ${total} preguntas sobre esta área. Responda naturalmente.\n\n*Pregunta 1 de ${total}:*\n\n`
+    `${section.emoji} *${label}*\n\nI will ask you ${total} questions about this area. Just answer naturally.`,
+    `${section.emoji} *${label}*\n\nLe haré ${total} preguntas sobre esta área. Responda naturalmente.`
   );
 
-  return [intro + getCategoryQuestion(session, sectionId, 0)];
+  // Ask for HOA documents if none uploaded yet for this section
+  const sectionDocs = (session.documents[sectionId] || []).length;
+  const hasDocs = sectionDocs > 0 || Object.values(session.documents).flat().length > 0;
+
+  if (!hasDocs) {
+    const { buildDocumentRequest } = require('./claude');
+    const docRequest = buildDocumentRequest(session, session.communityName);
+    // Set a flag so next message goes to the first question
+    session.awaitingDocOrContinue = true;
+    ss.save(session);
+    return [
+      intro,
+      docRequest,
+    ];
+  }
+
+  // Already have docs — go straight to first question
+  const firstQ = getCategoryQuestion(session, sectionId, 0);
+  return [intro + `\n\n*Question 1 of ${total}:*\n\n` + firstQ];
 }
 
 // ── Handle conversational answer ─────────────────────────────────
@@ -310,6 +349,37 @@ function getCategoryQuestion(session, sectionId, catIdx) {
 function secLabel(s, lang) {
   if (lang === 'es') return s.labelEs || s.es || s.label || s.en || s.id;
   return s.label || s.en || s.id;
+}
+
+// ── Handle document upload ────────────────────────────────────────
+async function handleDoc(session, caption, mediaInfo) {
+  const { fetchTwilioMedia, isSupported, fileLabel } = require('./mediaFetcher');
+  const { analyzeDocument } = require('./claude');
+  const { mimeType, mediaUrl } = mediaInfo;
+  const fLabel    = fileLabel(mimeType);
+  const sectionId = session.activeSectionId || 'general';
+  if (!session.documents[sectionId]) session.documents[sectionId] = [];
+
+  const lang = session.lang || 'en';
+  try {
+    const payload = await fetchTwilioMedia(mediaUrl, mimeType);
+    if (!isSupported(mimeType)) {
+      session.documents[sectionId].push({ fileName: caption || fLabel, mediaUrl, mimeType, uploadedAt: new Date() });
+      ss.save(session);
+      return [lang === 'es'
+        ? '📎 Archivo guardado. Suba un PDF o imagen para análisis de IA.'
+        : '📎 File saved. Upload a PDF or image for AI analysis.'];
+    }
+    const { analysis } = await analyzeDocument(session, payload, caption);
+    session.documents[sectionId].push({ fileName: caption || fLabel, mediaUrl, mimeType, analysis: analysis.slice(0, 500), uploadedAt: new Date() });
+    ss.save(session);
+    return [lang === 'es' ? `📄 *Documento analizado:*\n\n${analysis}` : `📄 *Document analyzed:*\n\n${analysis}`];
+  } catch (err) {
+    console.error('handleDoc error:', err.message);
+    session.documents[sectionId].push({ fileName: caption || fLabel, mediaUrl, mimeType, uploadedAt: new Date() });
+    ss.save(session);
+    return [lang === 'es' ? '📎 Documento guardado en su sesión.' : '📎 Document saved to your session.'];
+  }
 }
 
 module.exports = { handle, CATEGORY_QUESTIONS };
