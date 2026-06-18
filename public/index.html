@@ -1,1 +1,217 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dr. HOA — HOA Operational & Compliance Diagnostic</title>
+<meta name="description" content="Florida HOA boards: identify operational blind spots, compliance gaps, and governance risks before they become owner disputes or legal exposure. Free first section via WhatsApp."/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1117;color:#e6edf3;line-height:1.6;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid #21262d;position:sticky;top:0;background:#0d1117;z-index:100;}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:600;color:#5DCAA5;text-decoration:none;}
+.nav-cta{padding:9px 20px;background:#0F6E56;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;}
+.nav-cta:hover{background:#085041;}
+.hero{max-width:800px;margin:0 auto;padding:80px 24px 60px;text-align:center;}
+.eyebrow{display:inline-block;background:rgba(15,110,86,.2);border:1px solid #0F6E56;border-radius:999px;padding:5px 16px;font-size:12px;color:#5DCAA5;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:24px;}
+h1{font-size:clamp(30px,5.5vw,52px);font-weight:700;line-height:1.15;margin-bottom:20px;}
+h1 em{font-style:normal;color:#5DCAA5;}
+.sub{font-size:17px;color:#8b949e;margin-bottom:36px;max-width:560px;margin-left:auto;margin-right:auto;}
+.btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
+.btn-p{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:#0F6E56;color:#fff;border-radius:10px;font-size:15px;font-weight:600;text-decoration:none;transition:all .2s;}
+.btn-p:hover{background:#085041;transform:translateY(-1px);}
+.btn-s{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:transparent;color:#e6edf3;border:1px solid #30363d;border-radius:10px;font-size:15px;font-weight:500;text-decoration:none;transition:all .2s;}
+.btn-s:hover{border-color:#5DCAA5;color:#5DCAA5;}
+.hero-note{font-size:12px;color:#6e7681;}
+.trust{border-top:1px solid #21262d;border-bottom:1px solid #21262d;padding:18px 24px;}
+.trust-inner{max-width:800px;margin:0 auto;display:flex;justify-content:center;gap:28px;flex-wrap:wrap;}
+.ti{font-size:12px;color:#8b949e;display:flex;align-items:center;gap:6px;}
+.ti b{color:#5DCAA5;}
+.sec{max-width:800px;margin:0 auto;padding:64px 24px;}
+.sl{font-size:11px;font-weight:700;color:#5DCAA5;text-transform:uppercase;letter-spacing:.1em;text-align:center;margin-bottom:10px;}
+h2{font-size:clamp(22px,4vw,34px);font-weight:700;text-align:center;margin-bottom:12px;}
+.sh{font-size:15px;color:#8b949e;text-align:center;margin-bottom:40px;max-width:520px;margin-left:auto;margin-right:auto;}
+.who-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+.who-card{background:#161b22;border:1px solid #21262d;border-left:3px solid #0F6E56;border-radius:10px;padding:18px;}
+.who-icon{font-size:22px;margin-bottom:8px;}
+.who-card h3{font-size:14px;font-weight:600;color:#e6edf3;margin-bottom:5px;}
+.who-card p{font-size:12px;color:#6e7681;}
+.pitch{background:rgba(15,110,86,.08);border:1px solid rgba(15,110,86,.3);border-radius:14px;padding:28px 32px;text-align:center;margin:0 0 48px;}
+.pitch p{font-size:16px;color:#c9d1d9;line-height:1.7;font-style:italic;}
+.areas{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:32px;}
+.area{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:18px;}
+.area-icon{font-size:22px;margin-bottom:8px;}
+.area h3{font-size:13px;font-weight:600;color:#e6edf3;margin-bottom:4px;}
+.area p{font-size:12px;color:#6e7681;margin-bottom:8px;}
+.area-items{font-size:11px;color:#6e7681;}
+.area-items span{display:block;padding:2px 0;}
+.area-items span::before{content:"• ";color:#0F6E56;}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;}
+.step{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px;}
+.step-n{width:28px;height:28px;background:#0F6E56;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;margin-bottom:12px;}
+.step h3{font-size:13px;font-weight:600;color:#e6edf3;margin-bottom:6px;}
+.step p{font-size:12px;color:#6e7681;}
+.deliverables{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.d-item{display:flex;align-items:flex-start;gap:10px;background:#161b22;border:1px solid #21262d;border-radius:10px;padding:14px;}
+.d-icon{font-size:20px;flex-shrink:0;}
+.d-text h4{font-size:13px;font-weight:600;color:#e6edf3;margin-bottom:3px;}
+.d-text p{font-size:12px;color:#6e7681;}
+.not-included{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px 20px;margin-top:16px;}
+.not-included h4{font-size:12px;font-weight:600;color:#6e7681;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.not-included ul{list-style:none;}
+.not-included li{font-size:12px;color:#6e7681;padding:3px 0;}
+.not-included li::before{content:"✕ ";color:#30363d;}
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;}
+.plan{background:#161b22;border:1px solid #21262d;border-radius:14px;padding:24px;}
+.plan.feat{border-color:#0F6E56;position:relative;}
+.pbadge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#0F6E56;color:#fff;font-size:10px;font-weight:700;padding:3px 12px;border-radius:999px;white-space:nowrap;}
+.pname{font-size:12px;font-weight:600;color:#8b949e;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;}
+.pprice{font-size:32px;font-weight:700;color:#e6edf3;margin-bottom:4px;}
+.pprice span{font-size:14px;color:#6e7681;font-weight:400;}
+.pdesc{font-size:12px;color:#6e7681;margin-bottom:18px;}
+.pfeats{list-style:none;margin-bottom:20px;}
+.pfeats li{font-size:12px;color:#8b949e;padding:4px 0;display:flex;align-items:flex-start;gap:7px;}
+.pfeats li::before{content:"✓";color:#0F6E56;font-weight:700;flex-shrink:0;margin-top:1px;}
+.pbtn{display:block;width:100%;padding:11px;text-align:center;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;cursor:pointer;}
+.pbtn-free{background:transparent;color:#5DCAA5;border:1px solid #0F6E56;}
+.pbtn-free:hover{background:rgba(15,110,86,.1);}
+.pbtn-paid{background:#0F6E56;color:#fff;border:none;}
+.pbtn-paid:hover{background:#085041;}
+.cta-box{background:linear-gradient(135deg,rgba(15,110,86,.2),rgba(15,110,86,.05));border:1px solid #0F6E56;border-radius:16px;padding:48px 32px;text-align:center;margin:0 24px 72px;}
+.cta-box h2{font-size:clamp(20px,4vw,30px);font-weight:700;margin-bottom:10px;}
+.cta-box p{font-size:15px;color:#8b949e;margin-bottom:24px;}
+footer{border-top:1px solid #21262d;padding:24px 32px;text-align:center;font-size:12px;color:#6e7681;}
+footer a{color:#5DCAA5;text-decoration:none;}
+.wa{position:fixed;bottom:24px;right:24px;width:54px;height:54px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 20px rgba(37,211,102,.4);text-decoration:none;transition:transform .2s;z-index:200;}
+.wa:hover{transform:scale(1.1);}
+@media(max-width:600px){nav{padding:14px 16px;}.hero{padding:48px 16px 40px;}.sec{padding:48px 16px;}.deliverables{grid-template-columns:1fr;}.cta-box{margin:0 16px 48px;padding:32px 20px;}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="#">🩺 Dr. HOA</a>
+  <a class="nav-cta" id="nav-wa" href="#" target="_blank">Start free diagnostic</a>
+</nav>
+<div class="hero">
+  <div class="eyebrow">Florida HOA Operational Diagnostic · Central Florida</div>
+  <h1>Your HOA has blind spots.<br><em>Let's find them.</em></h1>
+  <p class="sub">Dr. HOA helps Florida HOA boards identify governance risks, compliance gaps, and operational inefficiencies — before they become owner disputes, management turnover, or legal exposure.</p>
+  <div class="btns">
+    <a class="btn-p" id="hero-wa" href="#" target="_blank">💬 Start free via WhatsApp</a>
+    <a class="btn-s" href="#how">How it works ↓</a>
+  </div>
+  <p class="hero-note">1 section completely free · No sign-up required · English & Español · Florida Statute 720</p>
+</div>
+<div class="trust">
+  <div class="trust-inner">
+    <div class="ti"><b>🏛️</b> Florida Statute 720 knowledge base</div>
+    <div class="ti"><b>🇺🇸 🇪🇸</b> Bilingual English & Spanish</div>
+    <div class="ti"><b>📱</b> Via WhatsApp — no app needed</div>
+    <div class="ti"><b>⚖️</b> Operational review — not legal opinion</div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sl">Who this is for</div>
+  <h2>Built for Central Florida HOA boards</h2>
+  <p class="sh">The boards who benefit most are the ones who feel something is wrong — but don't know where to start.</p>
+  <div class="pitch"><p>"Before you replace people, diagnose the system. Many HOA problems are not about bad actors — they are about missing processes, undocumented decisions, and gaps that nobody ever formalized."</p></div>
+  <div class="who-grid">
+    <div class="who-card"><div class="who-icon">🏠</div><h3>Self-managed HOAs</h3><p>No professional management. Board members doing everything. Needs a process check before something goes wrong.</p></div>
+    <div class="who-card"><div class="who-icon">🔄</div><h3>Unhappy with management</h3><p>Something feels off with the current company. Understand what is actually broken before making a change.</p></div>
+    <div class="who-card"><div class="who-icon">🏗️</div><h3>Developer transitions</h3><p>Just took over from the developer. Need to know what systems exist, what is missing, and what to build first.</p></div>
+    <div class="who-card"><div class="who-icon">⚡</div><h3>After board conflict</h3><p>Recent turnover, disputes, or suspected mismanagement. Time to audit the system, not just change the people.</p></div>
+  </div>
+</div>
+<div class="sec" style="padding-top:0;">
+  <div class="sl">What we assess</div>
+  <h2>5 areas · 25 categories · 125 items</h2>
+  <p class="sh">Each area covers the processes, controls, and records boards are most commonly exposed on.</p>
+  <div class="areas">
+    <div class="area"><div class="area-icon">🏛️</div><h3>A. Governance</h3><p>Board operations and decision controls</p><div class="area-items"><span>Meeting notice and agenda practices</span><span>Minutes quality and retention</span><span>Election procedures §720.306</span><span>Board decision tracking</span><span>Committee oversight</span></div></div>
+    <div class="area"><div class="area-icon">📁</div><h3>B. Records & Admin</h3><p>Official records and compliance systems</p><div class="area-items"><span>Records organization §720.303</span><span>7-year retention compliance</span><span>Owner inspection process</span><span>Contract file management</span><span>Insurance and permit tracking</span></div></div>
+    <div class="area"><div class="area-icon">💰</div><h3>C. Financial Operations</h3><p>Budget controls and collection processes</p><div class="area-items"><span>Budget process §720.303</span><span>Assessment billing controls</span><span>Delinquency process §720.3085</span><span>Invoice approval and segregation</span><span>Financial reporting §720.3086</span></div></div>
+    <div class="area"><div class="area-icon">🔧</div><h3>D. Maintenance & Vendors</h3><p>Contractor oversight and maintenance</p><div class="area-items"><span>Written contracts and renewals</span><span>Preventive maintenance calendar</span><span>Work order tracking</span><span>Competitive bid process</span><span>Critical date management</span></div></div>
+    <div class="area"><div class="area-icon">💬</div><h3>E. Resident Communications</h3><p>Owner-facing processes and enforcement</p><div class="area-items"><span>Violation process §720.305</span><span>ARC/ACC requests §720.3035</span><span>Owner inquiry response</span><span>New owner onboarding</span><span>Bilingual communications</span></div></div>
+  </div>
+</div>
+<div class="sec" style="padding-top:0;" id="how">
+  <div class="sl">How it works</div>
+  <h2>Conversational. Fast. Actionable.</h2>
+  <p class="sh">No forms, no spreadsheets. Just answer questions in plain language.</p>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><h3>Choose a section</h3><p>Pick any of the 5 areas to start. The first section is completely free.</p></div>
+    <div class="step"><div class="step-n">2</div><h3>Answer naturally</h3><p>5 conversational questions per area. Describe how things actually work.</p></div>
+    <div class="step"><div class="step-n">3</div><h3>Get your risk scorecard</h3><p>Immediate findings: 🟢🟡🔴 scorecard, top risks, 3 immediate actions with Florida Statute references.</p></div>
+    <div class="step"><div class="step-n">4</div><h3>Receive your proposal</h3><p>Share your email. A customized proposal for the full 5-area review arrives within 1 business day.</p></div>
+  </div>
+</div>
+<div class="sec" style="padding-top:0;">
+  <div class="sl">Complete review deliverables</div>
+  <h2>What the full audit delivers</h2>
+  <p class="sh">A board-ready package your team can act on immediately.</p>
+  <div class="deliverables">
+    <div class="d-item"><div class="d-icon">📊</div><div class="d-text"><h4>Executive Summary</h4><p>Board-ready summary of findings to present at your next meeting.</p></div></div>
+    <div class="d-item"><div class="d-icon">🟢</div><div class="d-text"><h4>Risk Scorecard</h4><p>Red / Yellow / Green rating per section and category.</p></div></div>
+    <div class="d-item"><div class="d-icon">📋</div><div class="d-text"><h4>30/60/90 Day Action Plan</h4><p>Actions ordered by urgency, legal exposure, and board effort.</p></div></div>
+    <div class="d-item"><div class="d-icon">⚖️</div><div class="d-text"><h4>Florida 720 Compliance Gaps</h4><p>Specific statute sections with real consequences explained.</p></div></div>
+    <div class="d-item"><div class="d-icon">📄</div><div class="d-text"><h4>Sample SOPs</h4><p>Standard operating procedures for the highest-risk areas.</p></div></div>
+    <div class="d-item"><div class="d-icon">📅</div><div class="d-text"><h4>Recommended Calendar</h4><p>Recurring task calendar so critical deadlines never fall through.</p></div></div>
+  </div>
+  <div class="not-included">
+    <h4>Not included</h4>
+    <ul>
+      <li>Legal opinion or attorney-client advice (consult your association attorney)</li>
+      <li>CPA financial statement audit (separate engagement)</li>
+      <li>Reserve study or engineering inspection</li>
+    </ul>
+  </div>
+</div>
+<div class="sec" style="padding-top:0;">
+  <div class="sl">Service options</div>
+  <h2>Start free. Upgrade when ready.</h2>
+  <p class="sh">The free section gives you a real diagnosis — not a teaser.</p>
+  <div class="pricing">
+    <div class="plan">
+      <div class="pname">Free Diagnostic</div>
+      <div class="pprice">$0</div>
+      <div class="pdesc">1 section of your choice — fully assessed</div>
+      <ul class="pfeats"><li>5 conversational questions</li><li>Risk scorecard 🟢🟡🔴</li><li>Top risks with statute references</li><li>3 immediate actions</li><li>English or Spanish</li></ul>
+      <a class="pbtn pbtn-free" id="free-btn" href="#" target="_blank">Start free on WhatsApp</a>
+    </div>
+    <div class="plan feat">
+      <div class="pbadge">Custom proposal</div>
+      <div class="pname">Full Operational Review</div>
+      <div class="pprice">Custom<span> proposal</span></div>
+      <div class="pdesc">Tailored to your HOA's size and situation</div>
+      <ul class="pfeats"><li>All 5 sections · 125 items reviewed</li><li>Executive summary for the board</li><li>Risk scorecard per section</li><li>30/60/90 day action plan</li><li>Florida Statute 720 compliance gaps</li><li>Sample SOPs and task calendar</li><li>Optional board presentation</li></ul>
+      <a class="pbtn pbtn-paid" id="paid-btn" href="#" target="_blank">Request your proposal</a>
+    </div>
+  </div>
+</div>
+<div class="cta-box">
+  <h2>Is your HOA operating defensibly?</h2>
+  <p>Find out in minutes — for free. No sign-up. No app. Just open WhatsApp and start.</p>
+  <a class="btn-p" id="cta-wa" href="#" target="_blank" style="display:inline-flex;">💬 Start your free section now</a>
+  <p style="margin-top:14px;font-size:12px;color:#6e7681;">English & Español · Florida HOA specialists · Statute 720 knowledge base</p>
+</div>
+<footer>
+  <p>🩺 <strong style="color:#5DCAA5;">Dr. HOA</strong> — HOA Operational & Compliance Diagnostic</p>
+  <p style="margin-top:6px;"><a href="mailto:hello@drhoa.com">hello@drhoa.com</a> · Central Florida</p>
+  <p style="margin-top:6px;font-size:11px;color:#444;">This service is an operational review and best-practices assessment. It is not a legal opinion, CPA audit, or reserve study.</p>
+</footer>
+<a class="wa" id="wa-float" href="#" target="_blank" title="Start on WhatsApp">💬</a>
+<script>
+// ← REPLACE with your real Twilio number (digits only, no + or spaces)
+const WA = '14155238886';
+const FREE = `https://wa.me/${WA}?text=${encodeURIComponent('Hello Dr. HOA, I would like to start my free HOA diagnostic.')}`;
+const PAID = `https://wa.me/${WA}?text=${encodeURIComponent('Hello Dr. HOA, I would like to request a proposal for a complete HOA operational review.')}`;
+document.getElementById('nav-wa').href = FREE;
+document.getElementById('hero-wa').href = FREE;
+document.getElementById('cta-wa').href = FREE;
+document.getElementById('wa-float').href = FREE;
+document.getElementById('free-btn').href = FREE;
+document.getElementById('paid-btn').href = PAID;
+</script>
+</body>
+</html>
